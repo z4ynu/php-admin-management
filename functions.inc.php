@@ -174,3 +174,18 @@ function loginUser($conn, $name, $pwd) {
     }
 
 }
+
+function is_authenticated() {
+  
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
+   
+    if (isset($_SESSION["userid"]) && isset($_SESSION["useruid"])) {
+        
+        return true; 
+    }
+
+    return false; 
+}
