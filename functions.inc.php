@@ -175,28 +175,26 @@ function loginUser($conn, $name, $pwd) {
 
 }
 
-function is_authenticated($conn, $username, $pwd) {
+function is_authenticated($conn) {
     
-    $sql = "SELECT * FROM tblAdmin WHERE usersUid = ?";
-    $stmt = mysqli_stmt_init($conn);
+    session_start();
 
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
+    if (isset($_SESSION["userid"])) {
         
-        return false; 
-        
-    }
+        $userid = $_SESSION["userid"];
+        $sql = "SELECT * FROM tblAdmin WHERE usersId = ?";
+        $stmt = mysqli_stmt_init($conn);
+ 
+        if (mysqli_stmt_prepare($stmt, $sql)) {
+            mysqli_stmt_bind_param($stmt, "i", $userid);
+            mysqli_stmt_execute($stmt);
+            $resultData = mysqli_stmt_get_result($stmt);
 
-    mysqli_stmt_bind_param($stmt, "s", $username);
-    mysqli_stmt_execute($stmt);
-    $resultData = mysqli_stmt_get_result($stmt);
-
-    if ($row = mysqli_fetch_assoc($resultData)) {
-        
-        $pwdHashed = $row['usersPwd'];
-        
-        if (password_verify($pwd, $pwdHashed)) {
-            
-            return true; 
+            if (mysqli_num_rows($resultData) > 0) {
+                
+                return true; 
+                
+            }
         }
     }
 
