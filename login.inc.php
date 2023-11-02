@@ -23,3 +23,17 @@
         exit();
 
     }
+
+    if (is_authenticated($conn, $username, $pwd)) {
+  
+        session_start();
+        $_SESSION["userid"] = $row["usersId"];
+        $_SESSION["useruid"] = $row["usersUid"];
+        header("location: ../index.php");
+        exit();
+        
+    } else {
+        
+        header("location: ../login.php?error=wronglogin");
+        exit();
+    }
