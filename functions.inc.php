@@ -175,16 +175,29 @@ function loginUser($conn, $name, $pwd) {
 
 }
 
-function is_authenticated() {
-  
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
+function is_authenticated($conn, $username, $pwd) {
+    
+    $sql = "SELECT * FROM tblAdmin WHERE usersUid = ?";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        
+        return false; 
+        
     }
 
-   
-    if (isset($_SESSION["userid"]) && isset($_SESSION["useruid"])) {
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $resultData = mysqli_stmt_get_result($stmt);
+
+    if ($row = mysqli_fetch_assoc($resultData)) {
         
-        return true; 
+        $pwdHashed = $row['usersPwd'];
+        
+        if (password_verify($pwd, $pwdHashed)) {
+            
+            return true; 
+        }
     }
 
     return false; 
